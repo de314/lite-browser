@@ -12,7 +12,7 @@ const store = createStore(
   /* preloadedState, */
   composeEnhancers(
     applyMiddleware(...middleware),
-    persistState(['auth'])
+    persistState(['auth', 'local'])
   )
 );
 

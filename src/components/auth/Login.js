@@ -1,23 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import OAuthService from 'services/OAuthService'
 
-import { Spin, Button } from 'antd'
+import { Spin, Row, Col } from 'antd'
+import LoginTile from './LoginTile'
 
-const Login = ({ isLoggingIn }) => (
+const Login = ({ isLoggingIn, plugins }) => (
   <div className="Login">
     <Spin spinning={isLoggingIn} >
-      <h1>Hello, Login!</h1>
-      <p>{isLoggingIn + ''}</p>
-      <a href={OAuthService.getImgurAuthUrl()}>
-        <Button className="oauth-btn oauth-btn-imgur">Login with Imgur</Button>
-      </a>
-      <a href={OAuthService.getRedditAuthUrl()}>
-        <Button className="oauth-btn oauth-btn-reddit">Login with Reddit</Button>
-      </a>
-      <a href={OAuthService.getGoogleAuthUrl()}>
-        <Button className="oauth-btn oauth-btn-google">Login with Google</Button>
-      </a>
+      <div className="p">
+        <h1>Welcome</h1>
+      </div>
+      <div className="p">
+        <hr/>
+      </div>
+      <Row type="flex" justify="space-around">
+        {plugins.map((plugin, i) => (
+          <Col md={12} lg={6} xl={4} key={i}>
+            <LoginTile plugin={plugin} />
+          </Col>
+        ))}
+      </Row>
+      <div className="p">
+        <hr/>
+      </div>
     </Spin>
   </div>
 )

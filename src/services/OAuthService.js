@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import axios from 'axios'
+import moment from 'moment'
 
 const qpPattern = /([^&=]+)=([^&]*)/g
 
@@ -99,9 +100,37 @@ const buildAuthUrl = (apiConfig) => {
   return null
 }
 
+const buildUrlForPlugin = (apiConfig) => {
+  return _buildUrl(apiConfig, 'authentication')
+}
+
+const buildUrlForLogin = (apiConfig) => {
+  return _buildUrl(apiConfig, 'identity')
+}
+
+const _buildUrl = (plugin, configPath) => {
+  const authConfig = plugin.def[configPath]
+  switch (authConfig.strategy) {
+
+    case 'OAUTH_IMPLICIT': {
+      const id = _.defaultTo(plugin.id, plugin.def.id)
+      const { authorizationUrl, params } = authConfig
+      let url = authorizationUrl + `?response_type=token&state=${id}::${configPath}`
+      _.keys(params).forEach(key => url += `&${key}=${params[key]}`)
+      return url;
+    }
+
+    default:
+
+  }
+  return null
+}
+
 const getImgurAuthUrl = () => buildAuthUrl(authApis.imgur)
 const getRedditAuthUrl = () => buildAuthUrl(authApis.reddit)
 const getGoogleAuthUrl = () => buildAuthUrl(authApis.google)
+
+const complexStatePattern = /([a-f0-9-]+)::(authentication|identity)/
 
 const parseQueryParams = (location = window.location) => {
   const params = {}
@@ -114,12 +143,19 @@ const parseQueryParams = (location = window.location) => {
   while (m = qpPattern.exec(queryString)) {
     params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
   }
+  if (m = complexStatePattern.exec(params.state)) {
+    params.state = {
+      raw: params.state,
+      id: m[1],
+      type: m[2],
+    }
+  }
+  params.obtainedAt = new Date().getTime()
   return params
 }
 
-const getUser = (location = window.location) => {
+const getUser = (params) => {
   const res = {}
-  const params = parseQueryParams(location)
   const { error } = params
   if (_.isNil(error)) {
     const apiKey = params.state
@@ -136,14 +172,44 @@ const getUser = (location = window.location) => {
   return new Promise(resolve => resolve(res))
 }
 
+const checkValid = (plugin, type='authentication') => {
+  const strategy = _.get(plugin, `def.${type}.strategy`)
+  const now = new Date().getTime()
+  let installed = !_.isNil(plugin.id)
+  let valid = false
+  let expiresAt = null
+  if (installed && !_.isNil(strategy)) {
+    switch (strategy) {
+      case 'OAUTH_IMPLICIT': {
+        const expiresIn = _.get(plugin, 'auth.expires_in')
+        expiresAt = _.isNil(expiresIn) ? null : moment(plugin.auth.obtainedAt).add(expiresIn, 's').valueOf()
+        valid = expiresAt > now
+        break;
+      }
+      default:
+
+    }
+  }
+  return {
+    installed,
+    valid,
+    invalid: installed && !valid,
+    expiresAt,
+  }
+}
+
 export default {
   registerApi,
 
   buildAuthUrl,
+  buildUrlForLogin,
+  buildUrlForPlugin,
   getImgurAuthUrl,
   getRedditAuthUrl,
   getGoogleAuthUrl,
 
   parseQueryParams,
   getUser,
+
+  checkValid,
 }

@@ -9,20 +9,20 @@ const Sidebar = () => (
     <Menu theme="dark" mode="inline">
       <Menu.Item key="1">
         <Link to="/">
-          <Icon type="appstore-o" />
-          <span>Dashboard</span>
+          <Icon type="solution" />
+          <span>Temp</span>
         </Link>
       </Menu.Item>
       <Menu.Item key="2">
-        <Link to="/users">
-          <Icon type="user" />
-          <span>Users</span>
+        <Link to="/plugins">
+          <Icon type="api" />
+          <span>Plugins</span>
         </Link>
       </Menu.Item>
       <Menu.Item key="3">
-        <Link to="/profile/edit">
-          <Icon type="solution" />
-          <span>Edit Profile</span>
+        <Link to="/plugins/install">
+          <Icon type="plus" />
+          <span>Install</span>
         </Link>
       </Menu.Item>
     </Menu>

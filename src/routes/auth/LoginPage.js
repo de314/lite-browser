@@ -1,5 +1,5 @@
 import React from 'react'
-import { selectIsLoggingIn } from 'rdx/selectors'
+import { selectIsLoggingIn, selectPluginsForIdentity } from 'rdx/selectors'
 
 import { connect } from 'react-redux'
 import { compose, withProps } from 'recompose'
@@ -7,10 +7,10 @@ import { compose, withProps } from 'recompose'
 import FloatingContentWrapper from 'components/layout/FloatingContentWrapper'
 import Login from 'components/auth/Login'
 
-let LoginPage = ({ isLoggingIn }) => (
+let LoginPage = ({ plugins, isLoggingIn }) => (
   <div className="LoginPage">
     <FloatingContentWrapper>
-      <Login isLoggingIn={isLoggingIn} />
+      <Login isLoggingIn={isLoggingIn} plugins={plugins} />
     </FloatingContentWrapper>
   </div>
 )
@@ -18,6 +18,7 @@ let LoginPage = ({ isLoggingIn }) => (
 export default compose(
   connect(
     state => ({
+      plugins: selectPluginsForIdentity(state),
       isLoggingIn: selectIsLoggingIn(state)
     })
   ),
