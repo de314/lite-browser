@@ -1,0 +1,29 @@
+@import './styles/mock-bootstrap.css';
+
+.PublicHeader .logo {
+  width: 120px;
+  height: 31px;
+  background: #333;
+  border-radius: 6px;
+  margin: 16px 24px 16px 0;
+  float: left;
+}
+
+.PrivateHeader .trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 16px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.PrivateHeader .trigger:hover {
+  color: #108ee9;
+}
+
+.Sidebar .logo {
+  height: 32px;
+  background: #333;
+  border-radius: 6px;
+  margin: 16px;
+}
